@@ -51,7 +51,9 @@ class LogoOrCifar:
 
     def defineModel(self, conv=2, flat=512):
         model = Sequential()
-        model.add(Conv2D(32, (3, 3), padding='same', input_shape=self.x_train.shape[1:]))
+        model.add(Conv2D(32, (3, 3),
+                         padding='same',
+                         input_shape=self.x_train.shape[1:]))
         model.add(Activation('relu'))
         model.add(Conv2D(32, (3, 3)))
         model.add(Activation('relu'))
@@ -75,7 +77,7 @@ class LogoOrCifar:
         model.add(Flatten())
         model.add(Dense(flat))
         model.add(Activation('relu'))
-        #model.add(Dropout(0.5))
+        # model.add(Dropout(0.5))
         model.add(Dense(2))
         model.add(Activation('softmax'))
         self.model = model
@@ -106,14 +108,14 @@ class LogoOrCifar:
     def fitToData(self, batch_size=32, epochs=1):
         # This will do preprocessing and realtime data augmentation:
         datagen = ImageDataGenerator(
-            featurewise_center=True,  # set input mean to 0 over the dataset
+            featurewise_center=True,  # set input mean to 0
             samplewise_center=False,  # set each sample mean to 0
-            featurewise_std_normalization=True,  # divide inputs by std of the dataset
+            featurewise_std_normalization=True,  # divide inputs by stdeviation
             samplewise_std_normalization=False,  # divide each input by its std
             zca_whitening=False,  # apply ZCA whitening,
-            rotation_range=0,  # randomly rotate images in the range (degrees, 0 to 180)
-            width_shift_range=0,  # randomly shift images horizontally (fraction of total width)
-            height_shift_range=0,  # randomly shift images vertically (fraction of total height)
+            rotation_range=0,  # randomly rotate images (degrees, 0 to 180)
+            width_shift_range=0,  # randomly shift images horizontally
+            height_shift_range=0,  # randomly shift images vertically
             horizontal_flip=False,  # randomly flip images
             vertical_flip=False)  # randomly flip images
 

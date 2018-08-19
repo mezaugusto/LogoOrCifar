@@ -101,7 +101,8 @@ def load_cifar_data(cifar_len, data_path='datasets/cifar-10/'):
     _num_images_train = _num_files_train * _images_per_file
 
     # Pre-allocate the arrays for the images and class-numbers for efficiency.
-    images = zeros(shape=[_num_images_train, img_size, img_size, num_channels], dtype=float)
+    images = zeros(shape=[_num_images_train, img_size, img_size, num_channels],
+                   dtype=float)
 
     # Begin-index for the current batch.
     begin = 0
@@ -175,7 +176,7 @@ def loadAndCreateDataset(cifar_len, lld_len):
     lld = load_lld_data(lld_len)
     print('Loading CIFAR Data')
     cifar = load_cifar_data(cifar_len)
-    print('Datasets Loaded, LLD Shape:', lld.shape, 'CIFAR Shape:', cifar.shape)
+    print('Datasets Loaded,LLD Shape:', lld.shape, 'CIFAR Shape:', cifar.shape)
     return createDataset(cifar, lld)
 
 
@@ -188,7 +189,9 @@ def createDirs(rel_path):
 
 def expandPickle():
     for i in range(5):
-        with open('datasets/LLD/LLD_favicon_data_' + str(i) + '.pkl', 'rb') as f:
+        with open(
+                'datasets/LLD/LLD_favicon_data_' + str(i) + '.pkl', 'rb'
+        ) as f:
             if i == 0:
                 icons = load(f, encoding="bytes")
             else:
