@@ -1,4 +1,5 @@
 from logocifar import LogoOrCifar
+from logocifar.constants import *
 
 import argparse
 if __name__ == '__main__':
@@ -15,8 +16,12 @@ if __name__ == '__main__':
 
     opts = p.parse_args()
 
-    LogoOrCifar(
-        train_sz=opts.train_sz,
-        cifar_len=opts.cifar_sz,
-        lld_len=opts.lld_sz
-    )
+    try:
+        LogoOrCifar(
+            train_sz=opts.train_sz,
+            cifar_len=opts.cifar_sz,
+            lld_len=opts.lld_sz
+        )
+    except ValueError as e:
+        error_message(LLD_NOT_PRESENT)
+        print(e)

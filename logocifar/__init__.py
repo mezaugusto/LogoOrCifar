@@ -6,7 +6,7 @@ from keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from .loadFunctions import loadAndCreateDataset, createDirs
+from .load_functions import load_and_create_dataset, create_dirs
 from pickle import load, dump
 
 
@@ -36,8 +36,8 @@ class LogoOrCifar:
             with open(dataset_path, 'rb') as f:
                 images, labels = load(f, encoding='bytes')
         else:
-            createDirs('datasets/processed/')
-            images, labels = loadAndCreateDataset(self.cifar_len, self.lld_len)
+            create_dirs('datasets/processed/')
+            images, labels = load_and_create_dataset(self.cifar_len, self.lld_len)
             if self.lld_len != 0:
                 print('Saving dataset in', dataset_path)
                 with open(dataset_path, 'wb') as f:
@@ -83,7 +83,7 @@ class LogoOrCifar:
         self.model = model
         self.model_name += '_flat_' + str(flat) + '_conv_' + str(conv) + '.h5'
         # Save model and weights
-        self.model_path = join(createDirs('saved_models'), self.model_name)
+        self.model_path = join(create_dirs('saved_models'), self.model_name)
         if not exists(self.model_path):
             return self.initialize_model()
         else:
