@@ -11,7 +11,7 @@ from pickle import load, dump
 
 
 class LogoOrCifar:
-    def __init__(self, train_sz=150000, cifar_len=0, lld_len=50000):
+    def __init__(self, train_sz, cifar_len, lld_len):
 
         self.cifar_len = cifar_len
         self.lld_len = lld_len
