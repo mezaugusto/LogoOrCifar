@@ -147,7 +147,7 @@ def load_lld_data(lld_len, data_path='datasets/LLD', single_file=None):
     return _cut_array(icons, lld_len)
 
 
-def createDataset(cifar, lld):
+def create_dataset(cifar, lld):
     print('Creating Dataset')
     dataset_size = len(cifar) + len(lld)
     step = 100 / dataset_size
@@ -171,23 +171,24 @@ def createDataset(cifar, lld):
     return images, labels
 
 
-def loadAndCreateDataset(cifar_len, lld_len):
+def load_and_create_dataset(cifar_len, lld_len):
     print('Loading LLD Data')
     lld = load_lld_data(lld_len)
     print('Loading CIFAR Data')
     cifar = load_cifar_data(cifar_len)
     print('Datasets Loaded,LLD Shape:', lld.shape, 'CIFAR Shape:', cifar.shape)
-    return createDataset(cifar, lld)
+    return create_dataset(cifar, lld)
 
 
-def createDirs(rel_path):
+def create_dirs(rel_path):
     save_dir = join(getcwd(), rel_path)
     if not isdir(save_dir):
         makedirs(save_dir)
     return save_dir
 
 
-def expandPickle():
+def expand_pickle():
+    icons = None
     for i in range(5):
         with open(
                 'datasets/LLD/LLD_favicon_data_' + str(i) + '.pkl', 'rb'

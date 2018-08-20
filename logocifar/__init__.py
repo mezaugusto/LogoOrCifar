@@ -17,7 +17,7 @@ class LogoOrCifar:
         self.lld_len = lld_len
         self.model_name = 'cifar_' + str(cifar_len) + '_lld_' + str(lld_len)
 
-        images, labels = self.loadData()
+        images, labels = self.load_data()
 
         self.x_train = images[:train_sz]
         self.y_train = to_categorical(labels[:train_sz], 2)
@@ -28,7 +28,7 @@ class LogoOrCifar:
         self.model = None
         self.model_path = ''
 
-    def loadData(self):
+    def load_data(self):
         dataset_path = 'datasets/processed/' + self.model_name + '_dataset.pkl'
 
         if exists(dataset_path):
@@ -49,7 +49,7 @@ class LogoOrCifar:
 
         return images, labels
 
-    def defineModel(self, conv=2, flat=512):
+    def define_model(self, conv=2, flat=512):
         model = Sequential()
         model.add(Conv2D(32, (3, 3),
                          padding='same',
@@ -85,12 +85,12 @@ class LogoOrCifar:
         # Save model and weights
         self.model_path = join(createDirs('saved_models'), self.model_name)
         if not exists(self.model_path):
-            return self.initializeModel()
+            return self.initialize_model()
         else:
             print('Model has been trained')
             return False
 
-    def initializeModel(self):
+    def initialize_model(self):
 
         # initiate RMSprop optimizer
         opt = rmsprop(lr=0.0001, decay=1e-6)
@@ -105,7 +105,7 @@ class LogoOrCifar:
 
         return True
 
-    def fitToData(self, batch_size=32, epochs=1):
+    def fit_to_data(self, batch_size=32, epochs=1):
         # This will do preprocessing and realtime data augmentation:
         datagen = ImageDataGenerator(
             featurewise_center=True,  # set input mean to 0
