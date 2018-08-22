@@ -8,6 +8,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from .load_functions import load_and_create_dataset, create_dirs
 from pickle import load, dump
+from .constants import *
 
 
 class LogoOrCifar:
@@ -15,7 +16,7 @@ class LogoOrCifar:
 
         self.cifar_len = cifar_len
         self.lld_len = lld_len
-        self.model_name = 'cifar_' + str(cifar_len) + '_lld_' + str(lld_len)
+        self.model_name = model_name(cifar_len, lld_len)
 
         images, labels = self.load_data()
 
@@ -29,23 +30,26 @@ class LogoOrCifar:
         self.model_path = ''
 
     def load_data(self):
-        dataset_path = 'datasets/processed/' + self.model_name + '_dataset.pkl'
+        dataset_path = PROCESSED_DATASET_PATH + self.model_name + MDL_FILE_EXT
 
         if exists(dataset_path):
-            print('Dataset already exists, loading...')
+            print(DATASET_EXISTS)
             with open(dataset_path, 'rb') as f:
                 images, labels = load(f, encoding='bytes')
         else:
-            create_dirs('datasets/processed/')
-            images, labels = load_and_create_dataset(self.cifar_len, self.lld_len)
+            create_dirs(PROCESSED_DATASET_PATH)
+            images, labels = load_and_create_dataset(
+                self.cifar_len,
+                self.lld_len
+            )
             if self.lld_len != 0:
-                print('Saving dataset in', dataset_path)
+                print(SAVING_DATASET, dataset_path)
                 with open(dataset_path, 'wb') as f:
                     try:
                         dump((images, labels), f)
                     except (MemoryError, OverflowError):
                         remove(dataset_path)
-                        print('ERROR: Not enough memory to save dataset')
+                        error_message(NOT_ENOUGH_MEMORY)
 
         return images, labels
 
@@ -81,13 +85,13 @@ class LogoOrCifar:
         model.add(Dense(2))
         model.add(Activation('softmax'))
         self.model = model
-        self.model_name += '_flat_' + str(flat) + '_conv_' + str(conv) + '.h5'
+        self.model_name += trained_model(flat, conv)
         # Save model and weights
-        self.model_path = join(create_dirs('saved_models'), self.model_name)
+        self.model_path = join(create_dirs(MODEL_PATH), self.model_name)
         if not exists(self.model_path):
             return self.initialize_model()
         else:
-            print('Model has been trained')
+            print(MODEL_TRAINED)
             return False
 
     def initialize_model(self):
@@ -130,4 +134,4 @@ class LogoOrCifar:
                                  verbose=1)
 
         self.model.save(self.model_path)
-        print('Saved trained model at', self.model_path)
+        print(SAVED_TRAINED, self.model_path)

@@ -79,18 +79,18 @@ def _load_data(filename, data_path):
     # Load the pickled data-file.
     try:
         data = _unpickle(filename, data_path)
+
+        # Get the raw images.
+        raw_images = data[b'data']
+
+        # Convert the images.
+        images = _convert_images(raw_images)
+
+        return images
     except FileNotFoundError as e:
         print(e)
         error_message(CIFAR_NOT_PRESENT + data_path)
         exit()
-
-    # Get the raw images.
-    raw_images = data[b'data']
-
-    # Convert the images.
-    images = _convert_images(raw_images)
-
-    return images
 
 
 def load_cifar_data(cifar_len, data_path=CIFAR_DATASET_PATH):
