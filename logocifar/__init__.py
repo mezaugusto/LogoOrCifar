@@ -8,7 +8,9 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from .load_functions import load_and_create_dataset, create_dirs
 from pickle import load, dump
-from .constants import *
+from logocifar.constants import \
+    format_model_name, PROCESSED_DATASET_PATH, MDL_FILE_EXT, DATASET_EXISTS, SAVING_DATASET, \
+    error_message, NOT_ENOUGH_MEMORY, MODEL_PATH, MODEL_TRAINED, SAVED_TRAINED, trained_model
 
 
 class LogoOrCifar:
@@ -16,7 +18,7 @@ class LogoOrCifar:
 
         self.cifar_len = cifar_len
         self.lld_len = lld_len
-        self.model_name = model_name(cifar_len, lld_len)
+        self.model_name = format_model_name(cifar_len, lld_len)
 
         images, labels = self.load_data()
 
@@ -91,7 +93,7 @@ class LogoOrCifar:
         if not exists(self.model_path):
             return self.initialize_model()
         else:
-            print(MODEL_TRAINED)
+            print(MODEL_TRAINED.format(self.model_name))
             return False
 
     def initialize_model(self):

@@ -1,11 +1,15 @@
 from glob import glob
 from os import makedirs, getcwd
-from os.path import join, isdir
+from os.path import join, isdir, exists
 from numpy import array, zeros, ones, float32, concatenate
 from numpy.random import seed, shuffle, get_state, set_state
 from pickle import load, dump
 from sys import stdout
 from .constants import *
+import urllib
+import tarfile
+from tqdm import tqdm
+import zipfile
 
 seed(SEED)
 img_size = MODEL_IMAGE_SIZE
@@ -92,6 +96,15 @@ def _load_data(filename, data_path):
         error_message(CIFAR_NOT_PRESENT + data_path)
         exit()
 
+def _download_and_extract_cifar(data_path):
+    print(DOWNLOADING_CIFAR)
+    tmp_file = DATASET_PATH+'CIFAR.zip'
+    if not exists(tmp_file):
+        with TqdmUpTo(desc='Downloading') as t:
+            urllib.request.urlretrieve(CIFAR_DATASET_URL, filename=tmp_file, reporthook=t.update_to)
+    with tarfile.open(name=tmp_file) as tar:
+        for member in tqdm(iterable=tar.getmembers(), total=len(tar.getmembers()), desc='Extracting'):
+            tar.extract(member=member, path=DATASET_PATH)
 
 def load_cifar_data(cifar_len, data_path=CIFAR_DATASET_PATH):
     """
@@ -102,6 +115,9 @@ def load_cifar_data(cifar_len, data_path=CIFAR_DATASET_PATH):
     :param data_path: path to the cifar dataset
     :return: the complete cifar dataset ready for training
     """
+    if not exists(data_path):
+        _download_and_extract_cifar(data_path)
+
     _num_files_train = CIFAR_FILES
 
     # Total number of images in the training-set.
@@ -134,6 +150,29 @@ def load_cifar_data(cifar_len, data_path=CIFAR_DATASET_PATH):
 
     return _cut_array(images, cifar_len)
 
+class TqdmUpTo(tqdm):
+    def update_to(self, b=1, bsize=1, tsize=None):
+        """
+        b  : int, optional
+            Number of blocks transferred so far [default: 1].
+        bsize  : int, optional
+            Size of each block (in tqdm units) [default: 1].
+        tsize  : int, optional
+            Total size (in tqdm units). If [default: None] remains unchanged.
+        """
+        if tsize is not None:
+            self.total = tsize
+        self.update(b * bsize - self.n)  # will also set self.n = b * bsize
+
+def _download_and_extract_lld(data_path):
+    print(DOWNLOADING_LLD)
+    tmp_file = DATASET_PATH+'LLD.zip'
+    if not exists(tmp_file):
+        with TqdmUpTo(desc='Downloading') as t:
+            urllib.request.urlretrieve(LLD_DATASET_URL, filename=tmp_file, reporthook=t.update_to)
+    with zipfile.ZipFile(tmp_file,"r") as zip_file:
+        for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist()), desc='Extracting'):
+            zip_file.extract(member=file, path=DATASET_PATH)
 
 def load_lld_data(lld_len, data_path=LLD_DATASET_PATH, single_file=None):
     """
@@ -143,11 +182,15 @@ def load_lld_data(lld_len, data_path=LLD_DATASET_PATH, single_file=None):
     :param single_file: Int, if only one file of LLD is needed
     :return: the sub-dataset of LLD
     """
+    if not exists(LLD_DATASET_PATH):
+        _download_and_extract_lld(data_path)
+
     pattern = LLD_FILE_PATTERN
     num_files = LLD_FILES
     files = glob(join(data_path, pattern))
     if len(files) <= 0:
-        raise ValueError(LLD_NOT_PRESENT + data_path)
+        print(LLD_NOT_PRESENT.format(data_path))
+
     files.sort()
     if single_file is None:
         with open(files[0], 'rb') as f:
