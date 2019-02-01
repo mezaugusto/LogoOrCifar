@@ -174,6 +174,15 @@ def _download_and_extract_lld(data_path):
         for file in tqdm(iterable=zip_file.namelist(), total=len(zip_file.namelist()), desc='Extracting'):
             zip_file.extract(member=file, path=DATASET_PATH)
 
+def _extract_individual_images(icons):
+    create_dirs(INDIVIDUAL_IMAGES_PATH)
+    step = 100 / len(icons)
+    for i, img in enumerate(icons):
+        with open('datasets/individuals/img_' + str(i), 'wb') as file:
+            dump(img, file)
+        stdout.write('\rCreating miniatures {:2.2f}%'.format(step * (i + 1)))
+
+
 def load_lld_data(lld_len, data_path=LLD_DATASET_PATH, single_file=None):
     """
     Load the entire LLD and create training dataset
@@ -267,25 +276,3 @@ def create_dirs(rel_path):
     if not isdir(save_dir):
         makedirs(save_dir)
     return save_dir
-
-
-def expand_pickle():
-    """
-    Expand the LLD pickles into a single folder
-    """
-    icons = None
-    for i in range(LLD_FILES-1):
-        with open(
-                LLD_DATASET_PATH + '/LLD_favicon_data_' + str(i) + '.pkl', 'rb'
-        ) as f:
-            if i == 0:
-                icons = load(f, encoding="bytes")
-            else:
-                icons = concatenate((icons, load(f, encoding="bytes")))
-            print('File', i + 1, 'of 5 loaded')
-
-    step = 100 / len(icons)
-    for i, img in enumerate(icons):
-        with open('datasets/individuals/img_' + str(i), 'wb') as file:
-            dump(img, file)
-        stdout.write('\rProcessing {:2.2f}%'.format(step * (i + 1)))
